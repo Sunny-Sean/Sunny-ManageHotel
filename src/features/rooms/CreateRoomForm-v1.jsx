@@ -1,3 +1,5 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 import { useForm } from "react-hook-form";
 
 import Input from "../../ui/Input";
@@ -7,52 +9,37 @@ import FileInput from "../../ui/FileInput";
 import Textarea from "../../ui/Textarea";
 import FormRow from "../../ui/FormRow";
 
-import { useCreateRoom } from "./useCreateRoom";
-import { useUpdateRoom } from "./useUpdateRoom";
+import { createRoom } from "../../api/apiRooms";
 
-function CreateRoomForm({ roomToUpdate = {} }) {
-  const { createRoom, isCreating } = useCreateRoom();
-  const { UpdateRoom, isUpdating } = useUpdateRoom();
-  const isWorking = isCreating || isUpdating;
-
-  const { id: updateId, ...updateValue } = roomToUpdate;
-  const isUpdate = Boolean(updateId);
+function CreateRoomForm({ roomToEdit = {} }) {
+  const { id: editId, ...editValue } = roomToEdit;
+  const isEdit = Boolean(editId);
 
   // resgister: dùng để đăng ký thông tin các trường đầu vào để react hook form xử lý
   // getValues lấy giá trị từ tất cả trường trong form
-  // handleSubmit: thực hiện submit mà không gây ra tải lại trang
   const { register, handleSubmit, reset, getValues, formState } = useForm({
-    // Nếu có giá trị của updateId có tồn tại => đặt giá trị mặc định cho các trường khi kick vào nút edit theo giá trị trường đó
-    defaultValues: isUpdate ? updateValue : {},
+    defaultValues: isEdit ? editValue : {},
   });
   const { errors } = formState;
+  const queryClient = useQueryClient();
+
+  const { mutate, isLoading: isCreating } = useMutation({
+    mutationFn: (newRoom) => createRoom(newRoom),
+    // Làm mới dữ liệu sau khi tạo thành công
+    onSuccess: () => {
+      toast.success("New room successfully created");
+      queryClient.invalidateQueries({
+        queryKey: ["rooms"],
+      });
+      // Sau khi thêm thành công thì đưa form về trắng
+      reset();
+    },
+    onError: (err) => toast.error(err.message),
+  });
 
   function onSubmit(data) {
-    // Kiểm tra xem đường dẫn ảnh là chuỗi hay 0, nếu là chuỗi thì giữ nguyên và đưa giá trị vào update
-    // Nếu 0 thì giá trị là đối tượng
-    const image = typeof data.image === "string" ? data.image : data.image[0];
-    // Khi gửi biểu mẫu thì gọi mutationFn để cập nhật phòng
-    if (isUpdate)
-      UpdateRoom(
-        { newRoomData: { ...data, image }, id: updateId },
-        {
-          onSuccess: (data) => {
-            // Sau khi thêm dữ liệu thì đưa form về trắng
-            reset();
-          },
-        }
-      );
     // Khi gửi biểu mẫu thì gọi mutationFn để tạo phòng
-    else
-      createRoom(
-        { ...data, image: image },
-        {
-          onSuccess: (data) => {
-            // Sau khi thêm dữ liệu thì đưa form về trắng
-            reset();
-          },
-        }
-      );
+    mutate({ ...data, image: data.image[0] });
   }
 
   function onError(err) {
@@ -66,7 +53,7 @@ function CreateRoomForm({ roomToUpdate = {} }) {
         <Input
           type="text"
           id="name"
-          disabled={isWorking}
+          disabled={isCreating}
           {...register("name", {
             required: "This field is required",
           })}
@@ -77,7 +64,7 @@ function CreateRoomForm({ roomToUpdate = {} }) {
         <Input
           type="number"
           id="maxCapacity"
-          disabled={isWorking}
+          disabled={isCreating}
           {...register("maxCapacity", {
             required: "This field is required",
             min: {
@@ -92,7 +79,7 @@ function CreateRoomForm({ roomToUpdate = {} }) {
         <Input
           type="number"
           id="price"
-          disabled={isWorking}
+          disabled={isCreating}
           {...register("price", {
             required: "This field is required",
             min: {
@@ -107,7 +94,7 @@ function CreateRoomForm({ roomToUpdate = {} }) {
         <Input
           type="number"
           id="discount"
-          disabled={isWorking}
+          disabled={isCreating}
           defaultValue={0}
           {...register("discount", {
             required: "This field is required",
@@ -125,7 +112,7 @@ function CreateRoomForm({ roomToUpdate = {} }) {
         <Textarea
           type="number"
           id="description"
-          disabled={isWorking}
+          disabled={isCreating}
           // defaultValue=""
           {...register("description", {
             required: "This field is required",
@@ -138,8 +125,7 @@ function CreateRoomForm({ roomToUpdate = {} }) {
           id="image"
           accept="image/*"
           {...register("image", {
-            // Không chỉnh sửa ảnh
-            required: isUpdate ? false : "This field is required",
+            required: "This field is required",
           })}
         />
       </FormRow>
@@ -149,9 +135,7 @@ function CreateRoomForm({ roomToUpdate = {} }) {
         <Button variation="secondary" type="reset">
           Cancel
         </Button>
-        <Button disabled={isWorking}>
-          {isUpdate ? "Update Room" : "Creat New Room"}
-        </Button>
+        <Button disabled={isCreating}>Add Room</Button>
       </FormRow>
     </Form>
   );

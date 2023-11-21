@@ -16,6 +16,15 @@ const StyledAppLayout = styled.div`
 const Main = styled.main`
   background-color: var(--color-grey-300);
   padding: 4rem 4.8rem 6.4rem;
+  overflow: scroll;
+`;
+
+const Container = styled.div`
+  max-width: 120rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 3.2rem;
 `;
 
 function Applayout() {
@@ -23,9 +32,11 @@ function Applayout() {
     <StyledAppLayout className="none-scroll">
       <Header />
       <Sidebar />
-      <Main>
-        {/* Hiển thị các thành phần trong tuyến đường con dựa trên URL */}
-        <Outlet />
+      <Main className="none-scroll">
+        <Container>
+          {/* Hiển thị các thành phần trong tuyến đường con dựa trên URL */}
+          <Outlet />
+        </Container>
       </Main>
     </StyledAppLayout>
   );

@@ -1,8 +1,8 @@
+import { useQuery } from "@tanstack/react-query";
 import styled from "styled-components";
-
+import { getRooms } from "../../api/apiRooms";
 import Spinner from "../../ui/Spinner";
 import RoomRow from "./RoomRow";
-import { useRoom } from "./useRoom";
 
 const Table = styled.div`
   border: 1px solid var(--color-grey-200);
@@ -29,7 +29,16 @@ const TableHeader = styled.header`
 `;
 
 function RoomTable() {
-  const { isLoading, rooms } = useRoom();
+  const {
+    isLoading,
+    data: rooms,
+    error,
+  } = useQuery({
+    // Xác định duy nhất dữ liệu
+    queryKey: ["rooms"],
+    //Hàm truy vấn
+    queryFn: getRooms,
+  });
 
   if (isLoading) return <Spinner />;
   return (
