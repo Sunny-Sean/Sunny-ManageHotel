@@ -7,9 +7,9 @@ export function useCreateRoom() {
 
   const { mutate: createRoom, isLoading: isCreating } = useMutation({
     mutationFn: (newRoom) => createUpdateRoom(newRoom),
-    // Làm mới dữ liệu sau khi tạo thành công
     onSuccess: () => {
       toast.success("New room successfully created");
+      // Làm mới dữ liệu sau khi tạo thành công
       queryClient.invalidateQueries({
         queryKey: ["rooms"],
       });
