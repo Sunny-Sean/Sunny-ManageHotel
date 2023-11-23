@@ -10,7 +10,7 @@ import FormRow from "../../ui/FormRow";
 import { useCreateRoom } from "./useCreateRoom";
 import { useUpdateRoom } from "./useUpdateRoom";
 
-function CreateRoomForm({ roomToUpdate = {} }) {
+function CreateRoomForm({ roomToUpdate = {}, onCloseModal }) {
   const { createRoom, isCreating } = useCreateRoom();
   const { UpdateRoom, isUpdating } = useUpdateRoom();
   const isWorking = isCreating || isUpdating;
@@ -22,7 +22,6 @@ function CreateRoomForm({ roomToUpdate = {} }) {
   // getValues lấy giá trị từ tất cả trường trong form
   // handleSubmit: thực hiện submit mà không gây ra tải lại trang
   const { register, handleSubmit, reset, getValues, formState } = useForm({
-    // Nếu có giá trị của updateId có tồn tại => đặt giá trị mặc định cho các trường khi kick vào nút edit theo giá trị trường đó
     defaultValues: isUpdate ? updateValue : {},
   });
   const { errors } = formState;
@@ -37,8 +36,9 @@ function CreateRoomForm({ roomToUpdate = {} }) {
         { newRoomData: { ...data, image }, id: updateId },
         {
           onSuccess: (data) => {
-            // Sau khi thêm dữ liệu thì đưa form về trắng
+            // Sau khi thêm dữ liệu thì đưa form về trắng và thoát ra khỏi cửa số chỉnh sửa
             reset();
+            onCloseModal?.();
           },
         }
       );
@@ -48,8 +48,9 @@ function CreateRoomForm({ roomToUpdate = {} }) {
         { ...data, image: image },
         {
           onSuccess: (data) => {
-            // Sau khi thêm dữ liệu thì đưa form về trắng
+            // Sau khi thêm dữ liệu thì đưa form về trắng và thoát ra khỏi cửa số chỉnh sửa
             reset();
+            onCloseModal?.();
           },
         }
       );
@@ -61,7 +62,10 @@ function CreateRoomForm({ roomToUpdate = {} }) {
 
   return (
     // Khi Submit gửi dữ liệu ở các trường đã dki
-    <Form onSubmit={handleSubmit(onSubmit, onError)}>
+    <Form
+      onSubmit={handleSubmit(onSubmit, onError)}
+      type={onCloseModal ? "modal" : "regular"}
+    >
       <FormRow label="Room name" error={errors?.name?.message}>
         <Input
           type="text"
@@ -146,7 +150,11 @@ function CreateRoomForm({ roomToUpdate = {} }) {
 
       <FormRow>
         {/* type là một thuộc tính của HTML */}
-        <Button variation="secondary" type="reset">
+        <Button
+          variation="secondary"
+          type="reset"
+          onClick={() => onCloseModal?.()}
+        >
           Cancel
         </Button>
         <Button disabled={isWorking}>
