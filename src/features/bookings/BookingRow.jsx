@@ -7,7 +7,7 @@ import Table from "../../ui/Table";
 import { formatCurrency } from "../../utils/helpers";
 import { formatDistanceFromNow } from "../../utils/helpers";
 
-const Cabin = styled.div`
+const Room = styled.div`
   font-size: 1.6rem;
   font-weight: 600;
   color: var(--color-grey-600);
@@ -45,9 +45,10 @@ function BookingRow({
     totalPrice,
     status,
     guests: { fullName: guestName, email },
-    cabins: { name: cabinName },
+    rooms: { name: roomName },
   },
 }) {
+  // Chuyển đổi màu dựa trên trạng thái
   const statusToTagName = {
     unconfirmed: "blue",
     "checked-in": "green",
@@ -56,7 +57,7 @@ function BookingRow({
 
   return (
     <Table.Row>
-      <Cabin>{cabinName}</Cabin>
+      <Room>{roomName}</Room>
 
       <Stacked>
         <span>{guestName}</span>

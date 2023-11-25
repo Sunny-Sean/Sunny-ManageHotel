@@ -86,42 +86,50 @@ function RoomRow({ room }) {
         <span>&mdash;</span>
       )}
       <div>
+        {/* Nhân đôi phòng */}
+        <button disabled={isCreating} onClick={() => handleDuplicate()}>
+          <HiSquare2Stack />
+        </button>
+
         <Modal>
-          <Menus.Menu>
-            <Menus.Toggle id={roomId} />
+          <Modal.Open opens="update">
+            <button>
+              <HiPencil />
+            </button>
+          </Modal.Open>
+          <Modal.Window name="update">
+            <CreateRoomForm roomToUpdate={room} />
+          </Modal.Window>
 
-            <Menus.List id={roomId}>
-              <Menus.Button
-                icon={<HiSquare2Stack />}
-                onClick={() => handleDuplicate()}
-              >
-                Duplicate
-              </Menus.Button>
-
-              {/* Đặt Menus.Buttonus trong  Modal.Open để các button trong menus có thể thực hiện chức năng*/}
-              <Modal.Open opens="update">
-                <Menus.Button icon={<HiPencil />}>Update</Menus.Button>
-              </Modal.Open>
-
-              {/* Đặt Menus.Buttonus trong  Modal.Open để các button trong menus có thể thực hiện chức năng*/}
-              <Modal.Open opens="delete">
-                <Menus.Button icon={<HiTrash />}>Delete</Menus.Button>
-              </Modal.Open>
-            </Menus.List>
-
-            <Modal.Window name="update">
-              <CreateRoomForm roomToUpdate={room} />
-            </Modal.Window>
-
-            <Modal.Window name="delete">
-              <ConfirmDelete
-                resourceName="rooms"
-                disabled={isDeleting}
-                onConfirm={() => deleteRoom(roomId)}
-              />
-            </Modal.Window>
-          </Menus.Menu>
+          <Modal.Open opens="delete">
+            <button>
+              <HiTrash />
+            </button>
+          </Modal.Open>
+          <Modal.Window name="delete">
+            <ConfirmDelete
+              resourceName="rooms"
+              disabled={isDeleting}
+              onConfirm={() => deleteRoom(roomId)}
+            />
+          </Modal.Window>
         </Modal>
+
+        <Menus.Menu>
+          <Menus.Toggle id={roomId} />
+          <Menus.List id={roomId}>
+            <Menus.Button
+              icon={<HiSquare2Stack />}
+              onClick={() => handleDuplicate()}
+            >
+              Duplicate
+            </Menus.Button>
+
+            <Menus.Button icon={<HiPencil />}>Update</Menus.Button>
+
+            <Menus.Button icon={<HiTrash />}>Delete</Menus.Button>
+          </Menus.List>
+        </Menus.Menu>
       </div>
     </Table.Row>
   );

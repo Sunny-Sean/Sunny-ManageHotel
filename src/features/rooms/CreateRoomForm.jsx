@@ -153,6 +153,7 @@ function CreateRoomForm({ roomToUpdate = {}, onCloseModal }) {
         <Button
           variation="secondary"
           type="reset"
+          // Thoát ra khỏi pop up
           onClick={() => onCloseModal?.()}
         >
           Cancel

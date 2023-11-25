@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 
 export function useOutSideClick(handler, lister = true) {
+  // theo dõi một giá trị thay đổi theo thời gian và không làm kích thích việc render lại component khi giá trị của nó thay đổi
   const ref = useRef();
   useEffect(
     function () {

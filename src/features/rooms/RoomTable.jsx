@@ -1,51 +1,63 @@
-import styled from "styled-components";
+import { useSearchParams } from "react-router-dom";
 
 import Spinner from "../../ui/Spinner";
 import RoomRow from "./RoomRow";
 import { useRoom } from "./useRoom";
-
-const Table = styled.div`
-  border: 1px solid var(--color-grey-200);
-
-  font-size: 1.4rem;
-  background-color: var(--color-grey-0);
-  border-radius: 7px;
-  overflow: hidden;
-`;
-
-const TableHeader = styled.header`
-  display: grid;
-  grid-template-columns: 0.6fr 1.8fr 2.2fr 1fr 1fr 1fr;
-  column-gap: 2.4rem;
-  align-items: center;
-
-  background-color: var(--color-grey-50);
-  border-bottom: 1px solid var(--color-grey-100);
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  font-weight: 600;
-  color: var(--color-grey-600);
-  padding: 1.6rem 2.4rem;
-`;
+import Table from "../../ui/Table";
+import Menus from "../../ui/Menus";
+import Empty from "../../ui/Empty";
 
 function RoomTable() {
   const { isLoading, rooms } = useRoom();
-
+  // Lấy đường dẫn hiện tại để lọc dữ liệu
+  const [searchParams] = useSearchParams();
   if (isLoading) return <Spinner />;
+
+  if (!rooms.length) return <Empty resourceName="rooms" />;
+
+  // lấy giá trị của đường dẫn
+  const filterValue = searchParams.get("discount") || "all";
+
+  let filterRooms;
+
+  // 1) Filter
+  if (filterValue === "all") filterRooms = rooms;
+  if (filterValue === "no-discount")
+    filterRooms = rooms.filter((room) => room.discount === 0);
+
+  if (filterValue === "with-discount")
+    filterRooms = rooms.filter((room) => room.discount > 0);
+
+  // 2) Sort
+  const sortBy = searchParams.get("sortBy") || "startDate-inc";
+  const [field, direction] = sortBy.split("-");
+  const change = direction === "inc" ? 1 : -1;
+
+  // Sắp xếp tăng dần nếu change = 1 và ngc lại
+  const sortedRooms = filterRooms.sort(
+    (a, b) => (a[field] - b[field]) * change
+  );
+
   return (
-    <Table role="table">
-      <TableHeader role="row">
-        <div></div>
-        <div>Room</div>
-        <div>Capacity</div>
-        <div>Price</div>
-        <div>Discount</div>
-        <div></div>
-      </TableHeader>
-      {rooms.map((room) => (
-        <RoomRow room={room} key={room.id} />
-      ))}
-    </Table>
+    <Menus>
+      <Table columns="0.6fr 1.8fr 2.2fr 1fr 1fr 1fr">
+        <Table.Header>
+          <div></div>
+          <div>Room</div>
+          <div>Capacity</div>
+          <div>Price</div>
+          <div>Discount</div>
+          <div></div>
+        </Table.Header>
+
+        <Table.Body
+          // data={rooms}
+          // data={filterRooms}
+          data={sortedRooms}
+          render={(room) => <RoomRow room={room} key={room.id} />}
+        />
+      </Table>
+    </Menus>
   );
 }
 

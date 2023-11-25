@@ -4,18 +4,7 @@ import { HiXMark } from "react-icons/hi2";
 import styled from "styled-components";
 import { useOutSideClick } from "../hooks/useOutsideClick";
 
-const StyledModalTable = styled.div`
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -25%);
-  background-color: var(--color-grey-0);
-  border-radius: var(--border-radius-lg);
-  box-shadow: var(--shadow-lg);
-  padding: 3.2rem 4rem;
-  transition: all 0.5s;
-`;
-const StyledModalAdd = styled.div`
+const StyledModal = styled.div`
   position: fixed;
   top: 50%;
   left: 50%;
@@ -93,30 +82,20 @@ function Window({ children, name }) {
   // Hiển thị jsx vào cây dom
   return createPortal(
     <Overlay className="none-scroll">
-      {name === "table" ? (
-        // Theo dõi sự kiện thay đổi bên trong style model
-        <StyledModalTable ref={ref}>
-          <Button onClick={close}>
-            <HiXMark />
-          </Button>
+      <StyledModal ref={ref}>
+        <Button onClick={close}>
+          <HiXMark />
+        </Button>
 
-          <div>{cloneElement(children, { onCloseModal: close })}</div>
-        </StyledModalTable>
-      ) : (
-        <StyledModalAdd ref={ref}>
-          <Button onClick={close}>
-            <HiXMark />
-          </Button>
-
-          <div>{cloneElement(children, { onCloseModal: close })}</div>
-        </StyledModalAdd>
-      )}
+        <div>{cloneElement(children, { onCloseModal: close })}</div>
+      </StyledModal>
     </Overlay>,
     // chuyển jsx này thành phần tử con trực tiếp của body
     document.body
   );
 }
 
+// Luôn đặt tên của opens trong modal.Open giống với tên của name trong open.ưindows
 Modal.Open = Open;
 Modal.Window = Window;
 

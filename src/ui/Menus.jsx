@@ -1,12 +1,17 @@
+import { createContext, useContext, useState } from "react";
+import { createPortal } from "react-dom";
+import { HiEllipsisVertical } from "react-icons/hi2";
 import styled from "styled-components";
+import { useOutSideClick } from "../hooks/useOutsideClick";
 
-const StyledMenu = styled.div`
+const Menu = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
 `;
 
 const StyledToggle = styled.button`
+  position: relative;
   background: none;
   border: none;
   padding: 0.4rem;
@@ -26,7 +31,7 @@ const StyledToggle = styled.button`
 `;
 
 const StyledList = styled.ul`
-  position: fixed;
+  position: absolute;
 
   background-color: var(--color-grey-0);
   box-shadow: var(--shadow-md);
@@ -60,3 +65,84 @@ const StyledButton = styled.button`
     transition: all 0.3s;
   }
 `;
+
+const MenusContext = createContext();
+function Menus({ children }) {
+  const [openId, setOpenId] = useState("");
+  const [position, setPositon] = useState(null);
+  const close = () => setOpenId("");
+  const open = setOpenId;
+  return (
+    <MenusContext.Provider
+      value={{ openId, close, open, position, setPositon }}
+    >
+      {children}
+    </MenusContext.Provider>
+  );
+}
+
+function Toggle({ id }) {
+  const { openId, close, open, setPositon } = useContext(MenusContext);
+  function handleClick(e) {
+    // Lấy tọa độ của nút gần nhất mới click
+    const rect = e?.target?.closest("button")?.getBoundingClientRect();
+    setPositon({
+      x: window.innerWidth - rect.width - rect.x,
+      y: rect.y + rect.height + 8,
+    });
+
+    console.log(openId);
+    // Nếu openId trống hoặc menu đang mở khác với id của nút đang nhấn
+    // thì mở menu của nút đang nhấn
+    // openId === "" || openId !== id ? open(id) : close();
+    if (openId === "" || openId !== id) {
+      open(id);
+    } else {
+      close();
+    }
+  }
+
+  return (
+    <StyledToggle onClick={handleClick}>
+      {/* Dấu ... nằm dọc */}
+      <HiEllipsisVertical />
+    </StyledToggle>
+  );
+}
+function List({ id, children }) {
+  const { openId, position, close } = useContext(MenusContext);
+  // Click ngoài cửa sổ popup thì tắt cửa sổ popup
+  // const ref = useOutSideClick(close);
+
+  if (openId !== id) return null;
+
+  // Nếu id của list khớp với id đang mở thì trả về cửa sổ pop up mới
+  return createPortal(
+    <StyledList position={position}>{children}</StyledList>,
+    document.body
+  );
+}
+function Button({ children, icon, onClick }) {
+  const { close } = useContext(MenusContext);
+
+  // Sau khi click vào chức năng thì đóng popup
+  function handleClick() {
+    onClick?.();
+    close();
+  }
+  return (
+    <li>
+      <StyledButton onClick={handleClick}>
+        {icon}
+        <span>{children}</span>
+      </StyledButton>
+    </li>
+  );
+}
+
+Menus.Menu = Menu;
+Menus.Toggle = Toggle;
+Menus.List = List;
+Menus.Button = Button;
+
+export default Menus;
