@@ -40,6 +40,7 @@ function Filter({ filterField, option }) {
   // Lấy đường dẫn hiện tại
   const currentFilter = searchParams.get(filterField) || option.at(0).value;
   function handleClick(value) {
+    // console.log("test");
     searchParams.set(filterField, value);
     // Cập nhật giá trị tham số truy vấn
     setSearchParams(searchParams);

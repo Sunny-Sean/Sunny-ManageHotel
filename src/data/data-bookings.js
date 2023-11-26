@@ -2,15 +2,20 @@ import { add } from "date-fns";
 
 function fromToday(numDays, withTime = false) {
   const date = add(new Date(), { days: numDays });
+  // Nếu có thông tin về thời gian => đặt thời gian của ngày mới về 00:00:00.000
   if (!withTime) date.setUTCHours(0, 0, 0, 0);
+  // chuyển đối tượng Date thành chuỗi đại diện và loại bỏ ký tự cuối cùng
   return date.toISOString().slice(0, -1);
 }
 
 export const bookings = [
   // ROOM 001
   {
+    // Thời điểm tạo phòng: ngày đại diện - 20 ngày
     created_at: fromToday(-20, true),
+    // ngày nhận phòng: ngày đại diện là ngày hiện tại
     startDate: fromToday(0),
+    // ngày trả phòng: ngày đại diện là ngày hiện tại + 7 ngày
     endDate: fromToday(7),
     roomId: 1,
     guestId: 2,
@@ -298,6 +303,28 @@ export const bookings = [
     endDate: fromToday(37),
     roomId: 9,
     guestId: 25,
+    hasBreakfast: false,
+    guestsRequest: "",
+    isPaid: true,
+    numGuests: 7,
+  },
+  {
+    created_at: fromToday(-55, true),
+    startDate: fromToday(-37),
+    endDate: fromToday(-32),
+    roomId: 9,
+    guestId: 31,
+    hasBreakfast: false,
+    guestsRequest: "",
+    isPaid: true,
+    numGuests: 7,
+  },
+  {
+    created_at: fromToday(-18, true),
+    startDate: fromToday(-14),
+    endDate: fromToday(-10),
+    roomId: 9,
+    guestId: 32,
     hasBreakfast: false,
     guestsRequest: "",
     isPaid: true,

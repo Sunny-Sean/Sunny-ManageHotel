@@ -44,8 +44,8 @@ function BookingRow({
     numGuests,
     totalPrice,
     status,
-    guests: { fullName: guestName, email },
     rooms: { name: roomName },
+    guests: { fullName: guestName, email },
   },
 }) {
   // Chuyển đổi màu dựa trên trạng thái
@@ -58,27 +58,27 @@ function BookingRow({
   return (
     <Table.Row>
       <Room>{roomName}</Room>
-
       <Stacked>
         <span>{guestName}</span>
         <span>{email}</span>
       </Stacked>
-
       <Stacked>
         <span>
+          {/* Kiểm tra ngày bắt đầu phải hôm nay 0 */}
           {isToday(new Date(startDate))
             ? "Today"
-            : formatDistanceFromNow(startDate)}{" "}
+            : // nếu 0 hiển thị khoảng cách thời gian từ startDate đến ngày hiện tại.
+              formatDistanceFromNow(startDate)}{" "}
+          {/* Số ngày khách ở */}
           &rarr; {numNights} night stay
         </span>
         <span>
+          {/* Định dạng ngày */}
           {format(new Date(startDate), "MMM dd yyyy")} &mdash;{" "}
           {format(new Date(endDate), "MMM dd yyyy")}
         </span>
       </Stacked>
-
       <Tag type={statusToTagName[status]}>{status.replace("-", " ")}</Tag>
-
       <Amount>{formatCurrency(totalPrice)}</Amount>
     </Table.Row>
   );

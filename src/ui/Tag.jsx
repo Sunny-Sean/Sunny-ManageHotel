@@ -8,7 +8,7 @@ const Tag = styled.span`
   padding: 0.4rem 1.2rem;
   border-radius: 100px;
 
-  /* Tạo những thành phần dựa trên prop nhận được */
+  /* Tạo thuộc tính mới dựa trên prop nhận được */
   color: var(--color-${(props) => props.type}-700);
   background-color: var(--color-${(props) => props.type}-100);
 `;

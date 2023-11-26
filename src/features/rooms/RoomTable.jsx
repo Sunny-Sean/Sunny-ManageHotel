@@ -15,12 +15,11 @@ function RoomTable() {
 
   if (!rooms.length) return <Empty resourceName="rooms" />;
 
-  // lấy giá trị của đường dẫn
-  const filterValue = searchParams.get("discount") || "all";
-
   let filterRooms;
 
   // 1) Filter
+  // lấy giá trị của đường dẫn
+  const filterValue = searchParams.get("discount") || "all";
   if (filterValue === "all") filterRooms = rooms;
   if (filterValue === "no-discount")
     filterRooms = rooms.filter((room) => room.discount === 0);
@@ -29,8 +28,10 @@ function RoomTable() {
     filterRooms = rooms.filter((room) => room.discount > 0);
 
   // 2) Sort
-  const sortBy = searchParams.get("sortBy") || "startDate-inc";
+  const sortBy = searchParams.get("sortBy") || "name-inc";
+  // Tách chuỗi truy vấn lấy được từ url
   const [field, direction] = sortBy.split("-");
+  // console.log(field, direction);
   const change = direction === "inc" ? 1 : -1;
 
   // Sắp xếp tăng dần nếu change = 1 và ngc lại

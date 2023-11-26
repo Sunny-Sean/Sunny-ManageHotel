@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { isFuture, isPast, isToday } from "date-fns";
-import supabase from "../services/supabase";
+import supabase from "../api/supabase";
 import Button from "../ui/Button";
 import { subtractDates } from "../utils/helpers";
 
 import { bookings } from "./data-bookings";
-import { cabins } from "./data-cabins";
+import { rooms } from "./data-rooms";
 import { guests } from "./data-guests";
 
 // const originalSettings = {
@@ -20,8 +20,8 @@ async function deleteGuests() {
   if (error) console.log(error.message);
 }
 
-async function deleteCabins() {
-  const { error } = await supabase.from("cabins").delete().gt("id", 0);
+async function deleteRooms() {
+  const { error } = await supabase.from("rooms").delete().gt("id", 0);
   if (error) console.log(error.message);
 }
 
@@ -35,33 +35,33 @@ async function createGuests() {
   if (error) console.log(error.message);
 }
 
-async function createCabins() {
-  const { error } = await supabase.from("cabins").insert(cabins);
+async function createRooms() {
+  const { error } = await supabase.from("rooms").insert(rooms);
   if (error) console.log(error.message);
 }
 
 async function createBookings() {
-  // Bookings need a guestId and a cabinId. We can't tell Supabase IDs for each object, it will calculate them on its own. So it might be different for different people, especially after multiple uploads. Therefore, we need to first get all guestIds and cabinIds, and then replace the original IDs in the booking data with the actual ones from the DB
+  // Việc đặt chỗ cần có guestId và roomId, không thể nói ID Supabase cho từng đối tượng, nó sẽ tự tính toán chúng. Vì vậy, nó có thể khác nhau đối với những người khác nhau, đặc biệt là sau khi tải lên nhiều lần. Do đó, trước tiên cần lấy tất cả ID khách và ID phòng, sau đó thay thế ID gốc trong dữ liệu đặt phòng bằng ID thực tế từ DB
   const { data: guestsIds } = await supabase
     .from("guests")
     .select("id")
     .order("id");
-  const allGuestIds = guestsIds.map((cabin) => cabin.id);
-  const { data: cabinsIds } = await supabase
-    .from("cabins")
+  const allGuestIds = guestsIds.map((room) => room.id);
+  const { data: roomsIds } = await supabase
+    .from("rooms")
     .select("id")
     .order("id");
-  const allCabinIds = cabinsIds.map((cabin) => cabin.id);
+  const allRoomIds = roomsIds.map((room) => room.id);
 
   const finalBookings = bookings.map((booking) => {
-    // Here relying on the order of cabins, as they don't have and ID yet
-    const cabin = cabins.at(booking.cabinId - 1);
+    // Ở đây dựa vào thứ tự các phòng vì chưa có và ID
+    const room = rooms.at(booking.roomId - 1);
     const numNights = subtractDates(booking.endDate, booking.startDate);
-    const cabinPrice = numNights * (cabin.regularPrice - cabin.discount);
+    const roomPrice = numNights * (room.price - room.discount);
     const extrasPrice = booking.hasBreakfast
       ? numNights * 15 * booking.numGuests
-      : 0; // hardcoded breakfast price
-    const totalPrice = cabinPrice + extrasPrice;
+      : 0; // giá bữa sáng được mã hóa cứng
+    const totalPrice = roomPrice + extrasPrice;
 
     let status;
     if (
@@ -85,11 +85,11 @@ async function createBookings() {
     return {
       ...booking,
       numNights,
-      cabinPrice,
+      roomPrice,
       extrasPrice,
       totalPrice,
       guestId: allGuestIds.at(booking.guestId - 1),
-      cabinId: allCabinIds.at(booking.cabinId - 1),
+      roomId: allRoomIds.at(booking.roomId - 1),
       status,
     };
   });
@@ -105,14 +105,14 @@ function Uploader() {
 
   async function uploadAll() {
     setIsLoading(true);
-    // Bookings need to be deleted FIRST
+    // Xóa dữ liệu cũ
     await deleteBookings();
     await deleteGuests();
-    await deleteCabins();
+    await deleteRooms();
 
-    // Bookings need to be created LAST
+    // Thêm dữ liệu test
     await createGuests();
-    await createCabins();
+    await createRooms();
     await createBookings();
 
     setIsLoading(false);

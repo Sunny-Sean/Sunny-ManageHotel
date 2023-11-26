@@ -1,16 +1,42 @@
 import { getToday } from "../utils/helpers";
+import { page_size } from "../utils/pagesize";
 import supabase from "./supabase";
 
-export async function getBookings() {
-  const { data, error } = await supabase
+export async function getBookings({ filter, sortBy, page }) {
+  let query = supabase
     .from("bookings")
     // Lấy dữ liệu khóa ngoại
-    .select("*, rooms(name), guests(fullName, email)");
+    .select(
+      "id, created_at, startDate, endDate, numNights, numGuests, status, totalPrice ,rooms(name), guests(fullName, email)",
+      { count: "exact" }
+    );
+
+  // filter
+  if (filter)
+    // lọc dữ liệu
+    query = query[filter.method || "eq"](filter.field, filter.value);
+
+  // sort
+  // sắp xếp dữ liệu
+  if (sortBy)
+    query = query.order(sortBy.field, {
+      // sắp xếp tăng dần (từ quá khứ tới tương lai)
+      ascending: sortBy.direction === "inc",
+    });
+
+  if (page) {
+    const from = (page - 1) * page_size;
+    const to = from + page_size - 1;
+    // Giới hạn truy vấn để phân trang
+    query = query.range(from, to);
+  }
+
+  const { data, error, count } = await query;
   if (error) {
     console.error(error);
     throw new Error("Bookings could not be loaded");
   }
-  return data;
+  return { data, count };
 }
 
 export async function getBooking(id) {
@@ -27,8 +53,7 @@ export async function getBooking(id) {
 
   return data;
 }
-
-// Returns all BOOKINGS that are were created after the given date. Useful to get bookings created in the last 30 days, for example.
+// Trả về tất cả ĐẶT PHÒNG được tạo sau ngày đã cho. Ví dụ: hữu ích để nhận các lượt đặt chỗ được tạo trong 30 ngày qua.
 export async function getBookingsAfterDate(date) {
   const { data, error } = await supabase
     .from("bookings")
@@ -44,7 +69,7 @@ export async function getBookingsAfterDate(date) {
   return data;
 }
 
-// Returns all STAYS that are were created after the given date
+// Trả về tất cả STAY được tạo sau ngày đã cho
 export async function getStaysAfterDate(date) {
   const { data, error } = await supabase
     .from("bookings")
@@ -61,7 +86,7 @@ export async function getStaysAfterDate(date) {
   return data;
 }
 
-// Activity means that there is a check in or a check out today
+// Hoạt động có nghĩa là có lượt nhận phòng hoặc trả phòng hôm nay
 export async function getStaysTodayActivity() {
   const { data, error } = await supabase
     .from("bookings")
@@ -71,7 +96,8 @@ export async function getStaysTodayActivity() {
     )
     .order("created_at");
 
-  // Equivalent to this. But by querying this, we only download the data we actually need, otherwise we would need ALL bookings ever created
+  // Tương đương với điều này. Nhưng bằng cách truy vấn điều này, chúng tôi chỉ tải xuống dữ liệu chúng tôi thực sự cần, nếu không chúng tôi sẽ cần TẤT CẢ các lượt đặt chỗ từng được tạo
+
   // (stay.status === 'unconfirmed' && isToday(new Date(stay.startDate))) ||
   // (stay.status === 'checked-in' && isToday(new Date(stay.endDate)))
 
@@ -98,7 +124,7 @@ export async function updateBooking(id, obj) {
 }
 
 export async function deleteBooking(id) {
-  // REMEMBER RLS POLICIES
+  // ghi nhớ chính sách RLS
   const { data, error } = await supabase.from("bookings").delete().eq("id", id);
 
   if (error) {
