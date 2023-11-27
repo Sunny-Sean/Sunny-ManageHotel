@@ -6,7 +6,7 @@ function RoomTableOperations() {
   return (
     <TableOperations>
       <Filter
-        filterField="discount"
+        filterField={"discount"}
         option={[
           { value: "all", label: "All" },
           { value: "no-discount", label: "No discount" },

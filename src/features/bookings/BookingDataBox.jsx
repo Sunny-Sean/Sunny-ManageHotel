@@ -109,14 +109,20 @@ function BookingDataBox({ booking }) {
     endDate,
     numNights,
     numGuests,
-    cabinPrice,
+    roomPrice,
     extrasPrice,
     totalPrice,
     hasBreakfast,
-    observations,
     isPaid,
-    guests: { fullName: guestName, email, country, countryFlag, nationalID },
-    cabins: { name: cabinName },
+    guestsRequest,
+    rooms: { name: roomName },
+    guests: {
+      fullName: guestName,
+      email,
+      nationality: country,
+      country: countryFlag,
+      nationalId,
+    },
   } = booking;
 
   return (
@@ -125,12 +131,13 @@ function BookingDataBox({ booking }) {
         <div>
           <HiOutlineHomeModern />
           <p>
-            {numNights} nights in Cabin <span>{cabinName}</span>
+            {numNights} nights in Room <span>{roomName}</span>
           </p>
         </div>
 
         <p>
           {format(new Date(startDate), "EEE, MMM dd yyyy")} (
+          {/* Tính khoảng cách của startDate tới hôm nay */}
           {isToday(new Date(startDate))
             ? "Today"
             : formatDistanceFromNow(startDate)}
@@ -139,6 +146,7 @@ function BookingDataBox({ booking }) {
       </Header>
 
       <Section>
+        {/* Thông tin khách hàng */}
         <Guest>
           {countryFlag && <Flag src={countryFlag} alt={`Flag of ${country}`} />}
           <p>
@@ -147,28 +155,32 @@ function BookingDataBox({ booking }) {
           <span>&bull;</span>
           <p>{email}</p>
           <span>&bull;</span>
-          <p>National ID {nationalID}</p>
+          <p>National ID {nationalId}</p>
         </Guest>
 
-        {observations && (
+        {/* Hiển thị yêu cầu khách hàng */}
+        {guestsRequest && (
           <DataItem
             icon={<HiOutlineChatBubbleBottomCenterText />}
-            label="Observations"
+            label="guestsRequest"
           >
-            {observations}
+            {guestsRequest}
           </DataItem>
         )}
 
+        {/* Bữa sáng */}
         <DataItem icon={<HiOutlineCheckCircle />} label="Breakfast included?">
           {hasBreakfast ? "Yes" : "No"}
         </DataItem>
 
-        <Price isPaid={isPaid}>
+        {/* Tổng tiền, truyền isPaid như prop */}
+        <Price isPaid={isPaid ? 1 : 0}>
           <DataItem icon={<HiOutlineCurrencyDollar />} label={`Total price`}>
             {formatCurrency(totalPrice)}
 
+            {/* Nếu có ăn sáng thì tổng = tiền phòng + ăn sáng */}
             {hasBreakfast &&
-              ` (${formatCurrency(cabinPrice)} cabin + ${formatCurrency(
+              ` (${formatCurrency(roomPrice)} room + ${formatCurrency(
                 extrasPrice
               )} breakfast)`}
           </DataItem>
@@ -178,6 +190,7 @@ function BookingDataBox({ booking }) {
       </Section>
 
       <Footer>
+        {/* Hiển thị ngày tạo phòng */}
         <p>Booked {format(new Date(created_at), "EEE, MMM dd yyyy, p")}</p>
       </Footer>
     </StyledBookingDataBox>

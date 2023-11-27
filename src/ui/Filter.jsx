@@ -25,6 +25,7 @@ const FilterButton = styled.button`
   border-radius: var(--border-radius-sm);
   font-weight: 500;
   font-size: 1.4rem;
+  /* To give the same height as select */
   padding: 0.44rem 0.8rem;
   transition: all 0.3s;
 
@@ -42,20 +43,21 @@ function Filter({ filterField, option }) {
   function handleClick(value) {
     // console.log("test");
     searchParams.set(filterField, value);
+    if (searchParams.get("page")) searchParams.set("page", 1);
     // Cập nhật giá trị tham số truy vấn
     setSearchParams(searchParams);
   }
 
   return (
     <StyledFilter>
-      {option.map((el) => (
+      {option.map((option) => (
         <FilterButton
-          key={el.value}
-          onClick={() => handleClick(el.value)}
-          active={el.value === currentFilter}
-          disabled={el.value === currentFilter}
+          key={option.value}
+          onClick={() => handleClick(option.value)}
+          active={option.value === currentFilter ? 1 : 0}
+          disabled={option.value === currentFilter}
         >
-          {el.label}
+          {option.label}
         </FilterButton>
       ))}
     </StyledFilter>

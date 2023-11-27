@@ -1,18 +1,27 @@
+import { page_size } from "../utils/pagesize";
 import supabase, { supabaseUrl } from "./supabase";
 
-export async function getRooms() {
+export async function getRooms({ page }) {
+  let query = supabase.from("rooms").select("*", { count: "exact" });
   // Thực hiện tạo truy vấn supabase = phương thức from
-  const { data, error } = await supabase.from("rooms").select("*");
+  if (page) {
+    const from = (page - 1) * page_size;
+    const to = from + page_size - 1;
+    // Giới hạn truy vấn để phân trang
+    query = query.range(from, to);
+  }
+  const { data, error, count } = await query;
 
   if (error) {
     console.error(error);
     throw new Error("Room could not be loaded");
   }
-  return data;
+
+  return { data, count };
 }
 
 export async function createUpdateRoom(newRoom, id) {
-  console.log(newRoom, id);
+  // console.log(newRoom, id);
   // Ktra xem đường dẫn chứa ảnh có chứa supabaseUrl ko?
   const hasImagePath = newRoom.image?.startsWith?.(supabaseUrl);
 
@@ -47,11 +56,12 @@ export async function createUpdateRoom(newRoom, id) {
 
   // Nếu có đường dẫn hình ảnh thì trở về
   if (hasImagePath) return data;
+  // Up ảnh lên "room-images
   const { error: storageError } = await supabase.storage
     .from("room-images")
     .upload(imageName, newRoom.image);
 
-  //b3: Xóa phòng mới tải nếu xảy ra lỗi tải hình ảnh cho phòng đó
+  //b3: nếu quá trình tải lên hình ảnh gặp lỗi thì xóa thông tin phòng và gửi về lỗi
   if (storageError) {
     await supabase.from("rooms").delete().eq("id", data.id);
     console.error(storageError);

@@ -6,9 +6,10 @@ import { useRoom } from "./useRoom";
 import Table from "../../ui/Table";
 import Menus from "../../ui/Menus";
 import Empty from "../../ui/Empty";
+import Pagination from "../../ui/Pagination";
 
 function RoomTable() {
-  const { isLoading, rooms } = useRoom();
+  const { isLoading, rooms, count } = useRoom();
   // Lấy đường dẫn hiện tại để lọc dữ liệu
   const [searchParams] = useSearchParams();
   if (isLoading) return <Spinner />;
@@ -16,7 +17,6 @@ function RoomTable() {
   if (!rooms.length) return <Empty resourceName="rooms" />;
 
   let filterRooms;
-
   // 1) Filter
   // lấy giá trị của đường dẫn
   const filterValue = searchParams.get("discount") || "all";
@@ -31,7 +31,6 @@ function RoomTable() {
   const sortBy = searchParams.get("sortBy") || "name-inc";
   // Tách chuỗi truy vấn lấy được từ url
   const [field, direction] = sortBy.split("-");
-  // console.log(field, direction);
   const change = direction === "inc" ? 1 : -1;
 
   // Sắp xếp tăng dần nếu change = 1 và ngc lại
@@ -57,6 +56,9 @@ function RoomTable() {
           data={sortedRooms}
           render={(room) => <RoomRow room={room} key={room.id} />}
         />
+        <Table.Footer>
+          <Pagination count={count} />
+        </Table.Footer>
       </Table>
     </Menus>
   );

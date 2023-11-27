@@ -27,7 +27,7 @@ export async function getBookings({ filter, sortBy, page }) {
   if (page) {
     const from = (page - 1) * page_size;
     const to = from + page_size - 1;
-    // Giới hạn truy vấn để phân trang
+    // Giới hạn truy vấn trong phạm vi để phân trang
     query = query.range(from, to);
   }
 
@@ -44,6 +44,7 @@ export async function getBooking(id) {
     .from("bookings")
     .select("*, rooms(*), guests(*)")
     .eq("id", id)
+    // Lấy một đối tượng ra khỏi mảng
     .single();
 
   if (error) {

@@ -8,6 +8,12 @@ import Button from "../../ui/Button";
 import ButtonText from "../../ui/ButtonText";
 
 import { useMoveBack } from "../../hooks/useMoveBack";
+import { useBooking } from "../bookings/useBooking";
+import Spinner from "../../ui/Spinner";
+import { useEffect, useState } from "react";
+import Checkbox from "../../ui/Checkbox";
+import { formatCurrency } from "../../utils/helpers";
+import { useChecking } from "./useChecking";
 
 const Box = styled.div`
   /* Box */
@@ -18,9 +24,26 @@ const Box = styled.div`
 `;
 
 function CheckinBooking() {
-  const moveBack = useMoveBack();
+  // Đặt giá trị confirmPaid ban đầu = false khi dữ liệu isPaid chưa đến
+  const { booking, isLoading } = useBooking();
+  const [confirmPaid, setConfirmPaid] = useState(false);
+  // const { isPaid, ...booking1 } = booking || {};
 
-  const booking = {};
+  // Sau khi dữ liệu đến thì đặt lại confirmPaid = isPaid
+  // useEffect(setConfirmPaid(booking?.isPaid ?? false), [booking]);
+  useEffect(
+    function () {
+      if (booking) {
+        setConfirmPaid(booking.isPaid);
+      }
+    },
+    [booking]
+  );
+
+  const moveBack = useMoveBack();
+  const { checkin, isCheckingIn } = useChecking();
+
+  if (isLoading) return <Spinner />;
 
   const {
     id: bookingId,
@@ -31,7 +54,11 @@ function CheckinBooking() {
     numNights,
   } = booking;
 
-  function handleCheckin() {}
+  function handleCheckin() {
+    if (!confirmPaid) return;
+    // thực hiện checkin dựa theo id
+    checkin(bookingId);
+  }
 
   return (
     <>
@@ -42,8 +69,23 @@ function CheckinBooking() {
 
       <BookingDataBox booking={booking} />
 
+      <Box>
+        <Checkbox
+          checked={confirmPaid}
+          onChange={() => setConfirmPaid((el) => !el)}
+          id="confirm"
+          disabled={confirmPaid || isCheckingIn}
+        >
+          I confirm that {guests.fullName} has paid the total amount of{" "}
+          {formatCurrency(totalPrice)}
+        </Checkbox>
+      </Box>
+
       <ButtonGroup>
-        <Button onClick={handleCheckin}>Check in booking #{bookingId}</Button>
+        {/* Nếu chưa thanh toán thì 0 thể checkin */}
+        <Button onClick={handleCheckin} disabled={!confirmPaid || isCheckingIn}>
+          Check in booking #{bookingId}
+        </Button>
         <Button variation="secondary" onClick={moveBack}>
           Back
         </Button>

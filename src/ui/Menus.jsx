@@ -91,7 +91,7 @@ function Toggle({ id }) {
       y: rect.y + rect.height + 8,
     });
 
-    console.log(openId);
+    // console.log(openId);
     // Nếu openId trống hoặc menu đang mở khác với id của nút đang nhấn
     // thì mở menu của nút đang nhấn
     // openId === "" || openId !== id ? open(id) : close();

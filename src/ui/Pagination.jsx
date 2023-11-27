@@ -88,7 +88,7 @@ function Pagination({ count }) {
   return (
     <StyledPagination>
       <P>
-        Showing <span>{(currentPage - 1) * page_size + 1}</span> to
+        Showing <span>{(currentPage - 1) * page_size + 1}</span> to{" "}
         <span>
           {/* Nếu đang ở trang cuối thì hiển thị kết quả */}
           {currentPage === pageCount ? count : currentPage * page_size}
