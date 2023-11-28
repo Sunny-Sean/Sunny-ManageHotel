@@ -43,6 +43,7 @@ function Filter({ filterField, option }) {
   function handleClick(value) {
     // console.log("test");
     searchParams.set(filterField, value);
+    // Khi chuyển sang bộ lọc mới đặt lại trang = 1
     if (searchParams.get("page")) searchParams.set("page", 1);
     // Cập nhật giá trị tham số truy vấn
     setSearchParams(searchParams);

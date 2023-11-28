@@ -14,6 +14,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Toaster } from "react-hot-toast";
 import Booking from "./pages/Booking";
 import Checkin from "./pages/Checkin";
+import ProtectRoute from "./ui/ProtectedRoute";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -32,7 +33,13 @@ function App() {
       <GlobalStyles />
       <BrowserRouter>
         <Routes>
-          <Route element={<Applayout />}>
+          <Route
+            element={
+              <ProtectRoute>
+                <Applayout />
+              </ProtectRoute>
+            }
+          >
             {/* Đường dẫn mặc định  */}
             <Route index element={<Navigate replace to="dashboard" />} />
 
