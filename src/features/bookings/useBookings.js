@@ -12,7 +12,7 @@ export function useBookings() {
 
   // Filter
   //  lấy tham số truy vấn từ URL
-  const filterValue = searchParams.get("status");
+  const filterValue = searchParams.get("status") || "all";
   const filter =
     !filterValue || filterValue === "all"
       ? null

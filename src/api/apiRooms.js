@@ -1,9 +1,35 @@
 import { page_size } from "../utils/pagesize";
 import supabase, { supabaseUrl } from "./supabase";
 
-export async function getRooms({ page }) {
-  let query = supabase.from("rooms").select("*", { count: "exact" });
+export async function getRooms({ filter, sortBy, page }) {
   // Thực hiện tạo truy vấn supabase = phương thức from
+  let query = supabase.from("rooms").select("*", { count: "exact" });
+  // .eq("discount", 0);
+
+  // filter
+  if (filter) {
+    // console.log(filter.field, filter.value);
+    if (filter.value === "with-discount") {
+      // console.log("aa");
+      query = query.gte("discount", 1);
+    }
+    if (filter.value === "no-discount") {
+      query = query.eq("discount", 0);
+    }
+    // console.log(query);
+    // query = query[filter.method || "eq"](filter.field, filter.value);
+  }
+
+  // lọc dữ liệu
+
+  // sort
+  // sắp xếp dữ liệu
+  if (sortBy)
+    query = query.order(sortBy.field, {
+      // sắp xếp tăng dần
+      ascending: sortBy.direction === "inc",
+    });
+
   if (page) {
     const from = (page - 1) * page_size;
     const to = from + page_size - 1;

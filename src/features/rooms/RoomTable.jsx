@@ -1,5 +1,3 @@
-import { useSearchParams } from "react-router-dom";
-
 import Spinner from "../../ui/Spinner";
 import RoomRow from "./RoomRow";
 import { useRoom } from "./useRoom";
@@ -11,32 +9,8 @@ import Pagination from "../../ui/Pagination";
 function RoomTable() {
   const { isLoading, rooms, count } = useRoom();
   // Lấy đường dẫn hiện tại để lọc dữ liệu
-  const [searchParams] = useSearchParams();
   if (isLoading) return <Spinner />;
-
   if (!rooms.length) return <Empty resourceName="rooms" />;
-
-  let filterRooms;
-  // 1) Filter
-  // lấy giá trị của đường dẫn
-  const filterValue = searchParams.get("discount") || "all";
-  if (filterValue === "all") filterRooms = rooms;
-  if (filterValue === "no-discount")
-    filterRooms = rooms.filter((room) => room.discount === 0);
-
-  if (filterValue === "with-discount")
-    filterRooms = rooms.filter((room) => room.discount > 0);
-
-  // 2) Sort
-  const sortBy = searchParams.get("sortBy") || "name-inc";
-  // Tách chuỗi truy vấn lấy được từ url
-  const [field, direction] = sortBy.split("-");
-  const change = direction === "inc" ? 1 : -1;
-
-  // Sắp xếp tăng dần nếu change = 1 và ngc lại
-  const sortedRooms = filterRooms.sort(
-    (a, b) => (a[field] - b[field]) * change
-  );
 
   return (
     <Menus>
@@ -53,7 +27,7 @@ function RoomTable() {
         <Table.Body
           // data={rooms}
           // data={filterRooms}
-          data={sortedRooms}
+          data={rooms}
           render={(room) => <RoomRow room={room} key={room.id} />}
         />
         <Table.Footer>

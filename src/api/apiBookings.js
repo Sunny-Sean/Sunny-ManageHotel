@@ -12,9 +12,12 @@ export async function getBookings({ filter, sortBy, page }) {
     );
 
   // filter
-  if (filter)
-    // lọc dữ liệu
+  if (filter) {
     query = query[filter.method || "eq"](filter.field, filter.value);
+    console.log(filter.field, filter.value);
+    console.log(query);
+  }
+  // lọc dữ liệu
 
   // sort
   // sắp xếp dữ liệu
