@@ -8,6 +8,7 @@ export function useLocalStorageState(initialState, key) {
 
   useEffect(
     function () {
+      // Lưu giá trị vào biến cục bộ
       localStorage.setItem(key, JSON.stringify(value));
     },
     [value, key]

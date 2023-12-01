@@ -14,16 +14,16 @@ export const formatDistanceFromNow = (dateStr) =>
     .replace("about ", "")
     .replace("in", "In");
 
-// supabase cần chuỗi ngày ISO, chuỗi đó sẽ khác nhau trong mỗi lần kết xuất vì MS hoặc SEC đã thay đổi, điều này không tốt, vì thế chúng ta sử dụng thủ thuật này để loại bỏ bất cứ lúc nào
 export const getToday = function (options = {}) {
   const today = new Date();
   // điều này là cần thiết để so sánh với create_at từ Supabase, vì nó không ở mức 0.0.0.0, cần đặt ngày là CUỐI của ngày khi chúng ta so sánh nó với các ngày trước đó
   if (options?.end)
     // đặt đến giây cuối cùng trong ngày hiện tại
     today.setUTCHours(23, 59, 59, 999);
+  // hoặc giây đầu tiên trong ngày
   else today.setUTCHours(0, 0, 0, 0);
 
-  // chuyển đối tượng Date thành chuỗi đại diện theo định dạng ISO và trả về, chuỗi này đại diện cho thời điểm hiện tại của ngày hôm nay
+  // trả về ngày hiện tại dưới dạng chuỗi ISO
   return today.toISOString();
 };
 
