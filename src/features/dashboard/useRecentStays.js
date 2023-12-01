@@ -16,9 +16,10 @@ export function useRecentStays() {
     queryKey: ["stays", `last-${numDays}`],
   });
 
+  // Lọc phòng đã được xác nhận ( checkin, checkout )
   const confirmedStays = stays?.filter(
     (stay) => stay.status === "checked-in" || stay.status === "checked-out"
   );
 
-  return { isLoading, stays, confirmedStays };
+  return { isLoading, stays, confirmedStays, numDays };
 }

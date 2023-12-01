@@ -59,7 +59,7 @@ export async function getBooking(id) {
 }
 // Trả về tất cả ĐẶT PHÒNG được tạo sau ngày đã cho. Ví dụ: hữu ích để nhận các lượt đặt chỗ được tạo trong 30 ngày qua.
 // Date: ISOstring
-// Nhận số lượng đặt phòng từ x ngày trước tới hiện tại (checkin. checkout, unconfirmed)
+// Nhận số lượng đặt phòng được tạo từ x ngày trước tới hiện tại (checkin. checkout, unconfirmed)
 export async function getBookingsAfterDate(date) {
   const { data, error } = await supabase
     .from("bookings")
@@ -77,14 +77,14 @@ export async function getBookingsAfterDate(date) {
   return data;
 }
 
-// Nhận số lần check in, checkout từ x ngày trước đến hiện tại
+// Nhận số lần phòng đã check in, checkout từ x ngày trước đến hiện tại
 export async function getStaysAfterDate(date) {
   const { data, error } = await supabase
     .from("bookings")
     // .select('*')
     .select("*, guests(fullName)")
 
-    // Lọc them thời điểm bắt đầu
+    // Lọc theo thời điểm bắt đầu nhận phòng tới bây giờ
     .gte("startDate", date)
     .lte("startDate", getToday());
 

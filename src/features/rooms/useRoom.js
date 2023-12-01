@@ -51,7 +51,7 @@ export function useRoom() {
       queryFn: () => getRooms({ filter, sortBy, page: page + 1 }),
     });
 
-  // Tìm nạp dữ liệu cho trang ở phía sau
+  // Tìm nạp dữ liệu cho trang ở phía trước, khi ở trang 1 sẽ không tìm nạp dữ liệu cho trước
   if (page > 1)
     queryClient.prefetchQuery({
       queryKey: ["rooms", filter, sortBy, page - 1],
