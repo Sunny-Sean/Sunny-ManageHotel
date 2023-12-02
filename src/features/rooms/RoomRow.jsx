@@ -94,18 +94,23 @@ function RoomRow({ room }) {
               <Menus.Button
                 icon={<HiSquare2Stack />}
                 onClick={() => handleDuplicate()}
+                disabled={isCreating}
               >
                 Duplicate
               </Menus.Button>
 
               {/* Đặt Menus.Buttonus trong  Modal.Open để các button trong menus có thể thực hiện chức năng*/}
               <Modal.Open opens="update">
-                <Menus.Button icon={<HiPencil />}>Update</Menus.Button>
+                <Menus.Button icon={<HiPencil />} disabled={isCreating}>
+                  Update
+                </Menus.Button>
               </Modal.Open>
 
               {/* Đặt Menus.Buttonus trong  Modal.Open để các button trong menus có thể thực hiện chức năng*/}
               <Modal.Open opens="delete">
-                <Menus.Button icon={<HiTrash />}>Delete</Menus.Button>
+                <Menus.Button icon={<HiTrash />} disabled={isCreating}>
+                  Delete
+                </Menus.Button>
               </Modal.Open>
             </Menus.List>
 

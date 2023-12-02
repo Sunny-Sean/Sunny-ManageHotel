@@ -115,6 +115,7 @@ const startDataDark = [
 ];
 
 function prepareData(startData, stays) {
+  // Hàm xử lý tăng giá trị dựa trên thời gian lưu trứu
   function incArrayValue(arr, field) {
     return arr.map((obj) =>
       obj.duration === field ? { ...obj, value: obj.value + 1 } : obj
@@ -136,6 +137,7 @@ function prepareData(startData, stays) {
     }, startData)
     .filter((obj) => obj.value > 0);
 
+  // Trả về mảng bao gồm các ngày đã xuất hiện
   return data;
 }
 

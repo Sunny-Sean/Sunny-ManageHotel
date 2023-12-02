@@ -65,7 +65,7 @@ export async function getBookingsAfterDate(date) {
     .from("bookings")
     .select("created_at, totalPrice, extrasPrice")
 
-    // Láy khoảng thời gian giữa ngày truyền vào tới hiện tại, vd: 30 ngày trước tới nay
+    // Láy khoảng thời gian created_at giữa ngày truyền vào tới hiện tại, vd: 30 ngày trước tới nay
     .gte("created_at", date)
     .lte("created_at", getToday({ end: true }));
 
@@ -77,7 +77,7 @@ export async function getBookingsAfterDate(date) {
   return data;
 }
 
-// Nhận số lần phòng đã check in, checkout từ x ngày trước đến hiện tại
+// Số lần khách đã đến ks từ x ngày trước đến hiện tại (checkin, checkout, unconfirmed)
 export async function getStaysAfterDate(date) {
   const { data, error } = await supabase
     .from("bookings")
@@ -96,17 +96,20 @@ export async function getStaysAfterDate(date) {
   return data;
 }
 
-// Hoạt động có nghĩa là có lượt nhận phòng hoặc trả phòng hôm nay
+// Trả về lượt nhận phòng hoặc trả phòng hôm nay
 export async function getStaysTodayActivity() {
   const { data, error } = await supabase
     .from("bookings")
-    .select("*, guests(fullName, nationality, countryFlag)")
+    .select("*, guests(fullName, nationality, country)")
+    // để lọc bookings dựa trên trạng thái và ngày
     .or(
+      // trạng thái = unconfirmed và startDate = hôm nay hoặc trạng thái = checked-in và endDate = hôm nay
       `and(status.eq.unconfirmed,startDate.eq.${getToday()}),and(status.eq.checked-in,endDate.eq.${getToday()})`
     )
+    // Sắp xếp kết quả theo ngày tạo phòng
     .order("created_at");
 
-  // Tương đương với điều này. Nhưng bằng cách truy vấn điều này, chúng tôi chỉ tải xuống dữ liệu chúng tôi thực sự cần, nếu không chúng tôi sẽ cần TẤT CẢ các lượt đặt chỗ từng được tạo
+  // Tương đương với điều này. Nhưng bằng cách truy vấn điều này, chỉ tải xuống dữ liệu chúng tôi thực sự cần, nếu không sẽ cần TẤT CẢ các lượt đặt chỗ từng được tạo
 
   // (stay.status === 'unconfirmed' && isToday(new Date(stay.startDate))) ||
   // (stay.status === 'checked-in' && isToday(new Date(stay.endDate)))

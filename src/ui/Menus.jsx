@@ -84,6 +84,7 @@ function Menus({ children }) {
 function Toggle({ id }) {
   const { openId, close, open, setPositon } = useContext(MenusContext);
   function handleClick(e) {
+    e.stopPropagation();
     // Lấy tọa độ của nút gần nhất mới click
     const rect = e?.target?.closest("button")?.getBoundingClientRect();
     setPositon({
@@ -112,13 +113,15 @@ function Toggle({ id }) {
 function List({ id, children }) {
   const { openId, position, close } = useContext(MenusContext);
   // Click ngoài cửa sổ popup thì tắt cửa sổ popup
-  // const ref = useOutSideClick(close);
+  const ref = useOutSideClick(close, false);
 
   if (openId !== id) return null;
 
   // Nếu id của list khớp với id đang mở thì trả về cửa sổ pop up mới
   return createPortal(
-    <StyledList position={position}>{children}</StyledList>,
+    <StyledList position={position} ref={ref}>
+      {children}
+    </StyledList>,
     document.body
   );
 }

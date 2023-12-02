@@ -15,6 +15,7 @@ import Checkbox from "../../ui/Checkbox";
 import { formatCurrency } from "../../utils/helpers";
 import { useChecking } from "./useChecking";
 import { useSettings } from "../settings/useSettings";
+import Empty from "../../ui/Empty";
 
 const Box = styled.div`
   /* Box */
@@ -39,6 +40,7 @@ function CheckinBooking() {
   const { checkin, isCheckingIn } = useChecking();
 
   if (isLoading || isLoadingSettings) return <Spinner />;
+  if (!booking) return <Empty resourceName="information check in" />;
 
   const {
     id: bookingId,

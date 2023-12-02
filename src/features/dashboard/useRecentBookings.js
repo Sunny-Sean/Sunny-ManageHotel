@@ -16,6 +16,7 @@ export function useRecentBookings() {
 
   // Truy vấn dữ liệu
   const { isLoading, data: bookings } = useQuery({
+    // Nhận số lượng đặt phòng được tạo từ queryDate ngày trước tới hiện tại (checkin. checkout, unconfirmed)
     queryFn: () => getBookingsAfterDate(queryDate),
     queryKey: ["bookings", `last-${numDays}`],
   });

@@ -12,6 +12,7 @@ export function useRecentStays() {
   const queryDate = subDays(new Date(), numDays).toISOString();
 
   const { isLoading, data: stays } = useQuery({
+    // Đếm số lần khách đã đến ks từ queryDate ngày trước đến hiện tại (checkin, checkout, unconfirmed)
     queryFn: () => getStaysAfterDate(queryDate),
     queryKey: ["stays", `last-${numDays}`],
   });
@@ -20,6 +21,9 @@ export function useRecentStays() {
   const confirmedStays = stays?.filter(
     (stay) => stay.status === "checked-in" || stay.status === "checked-out"
   );
+
+  // stays: Số lần khách đã đến ks từ x ngày trước đến hiện tại (checkin, checkout, unconfirmed)
+  // confirmedStays: Số lần khách đã đến ks từ x ngày trước đến hiện tại (checkin, checkout)
 
   return { isLoading, stays, confirmedStays, numDays };
 }
