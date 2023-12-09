@@ -25,6 +25,18 @@ export async function login({ email, password }) {
 
   if (error) throw new Error(error.message);
 
+  // return { data, password };
+  return data;
+}
+
+export async function getUserUID() {
+  const { data, error } = await supabase.auth.admin.getUserById(
+    "68800ddc-6831-4409-9de2-fea2bde9e876"
+  );
+
+  if (error) throw new Error(error.message);
+
+  // return { data, password };
   return data;
 }
 
@@ -36,7 +48,6 @@ export async function getCurrentUser() {
 
   // trả về thông tin chi tiết người dùng hiện tại nếu có đăng nhập
   const { data, error } = await supabase.auth.getUser();
-
   // console.log(data);
 
   if (error) throw new Error(error.message);
@@ -56,7 +67,7 @@ export async function updateCurrentUser({ password, fullName, avatar }) {
   if (password) updateData = { password };
   if (fullName) updateData = { data: { fullName } };
 
-  // Supabase tự biết người nào đang dùng để câpj nhật
+  // Supabase tự biết người nào đang dùng để cập nhật
   const { data, error } = await supabase.auth.updateUser(updateData);
   if (error) throw new Error(error.message);
   if (!avatar) return data;
@@ -72,7 +83,7 @@ export async function updateCurrentUser({ password, fullName, avatar }) {
 
   if (storageError) throw new Error(storageError.message);
 
-  // 3. Cập nhật ảnh đại diễnj cho người dùng
+  // 3. Cập nhật ảnh đại diện cho người dùng
   const { data: updateUser, error: error2 } = await supabase.auth.updateUser({
     data: {
       avatar: `${supabaseUrl}/storage/v1/object/public/avatars/${fileName}`,

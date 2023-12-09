@@ -5,11 +5,13 @@ import Input from "../../ui/Input";
 import FormRowVertical from "../../ui/FormRowVertical";
 import { useLogin } from "./useLogin";
 import SpinnerMini from "../../ui/SpinnerMini";
+import { useNavigate } from "react-router-dom";
 
 function LoginForm() {
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
   const { login, isLoading } = useLogin();
+  const navigate = useNavigate();
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -26,7 +28,6 @@ function LoginForm() {
       }
     );
   }
-
   return (
     <Form onSubmit={handleSubmit}>
       <FormRowVertical label="Email address">
@@ -51,7 +52,7 @@ function LoginForm() {
       </FormRowVertical>
       <FormRowVertical>
         <Button size="large" disabled={isLoading}>
-          {!isLoading ? "login" : <SpinnerMini />}
+          {!isLoading ? "Login" : <SpinnerMini />}
         </Button>
       </FormRowVertical>
     </Form>

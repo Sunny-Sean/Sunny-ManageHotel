@@ -14,6 +14,7 @@ function UpdateUserDataForm() {
     user: {
       email,
       user_metadata: { fullName: currentFullName },
+      id,
     },
   } = useUser();
 
@@ -44,8 +45,12 @@ function UpdateUserDataForm() {
   return (
     <Form onSubmit={handleSubmit}>
       <FormRow label="Email address">
-        <Input defaultValue={email} disabled={isUpdating} />
+        <Input defaultValue={email} disabled={true} />
       </FormRow>
+
+      {/* <FormRow label="User UID">
+        <Input defaultValue={id} disabled={true} />
+      </FormRow> */}
 
       <FormRow label="Full name">
         <Input

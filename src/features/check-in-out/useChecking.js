@@ -22,7 +22,7 @@ export function useChecking() {
       // Làm mới dữ liệu sau khi tạo thành công
       toast.success(`Booking #${data.id} successfully checked in`);
       queryClient.invalidateQueries({ active: true });
-      navigate("/");
+      navigate("/dashboard");
     },
 
     onError: () => toast.error("There was an error while checked in"),
