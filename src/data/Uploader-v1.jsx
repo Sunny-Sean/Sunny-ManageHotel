@@ -8,30 +8,30 @@ import { bookings } from "./data-bookings";
 import { rooms } from "./data-rooms";
 import { guests } from "./data-guests";
 
-// async function deleteGuests() {
-//   const { error } = await supabase.from("guests").delete().gt("id", 0);
-//   if (error) console.log(error.message);
-// }
+async function deleteGuests() {
+  const { error } = await supabase.from("guests").delete().gt("id", 0);
+  if (error) console.log(error.message);
+}
 
-// async function deleteRooms() {
-//   const { error } = await supabase.from("rooms").delete().gt("id", 0);
-//   if (error) console.log(error.message);
-// }
+async function deleteRooms() {
+  const { error } = await supabase.from("rooms").delete().gt("id", 0);
+  if (error) console.log(error.message);
+}
 
 async function deleteBookings() {
   const { error } = await supabase.from("bookings").delete().gt("id", 0);
   if (error) console.log(error.message);
 }
 
-// async function createGuests() {
-//   const { error } = await supabase.from("guests").insert(guests);
-//   if (error) console.log(error.message);
-// }
+async function createGuests() {
+  const { error } = await supabase.from("guests").insert(guests);
+  if (error) console.log(error.message);
+}
 
-// async function createRooms() {
-//   const { error } = await supabase.from("rooms").insert(rooms);
-//   if (error) console.log(error.message);
-// }
+async function createRooms() {
+  const { error } = await supabase.from("rooms").insert(rooms);
+  if (error) console.log(error.message);
+}
 
 async function createBookings() {
   // Việc đặt chỗ cần có guestId và roomId, không thể nói ID Supabase cho từng đối tượng, nó sẽ tự tính toán chúng. Vì vậy, nó có thể khác nhau đối với những người khác nhau, đặc biệt là sau khi tải lên nhiều lần. Do đó, trước tiên cần lấy tất cả ID khách và ID phòng, sau đó thay thế ID gốc trong dữ liệu đặt phòng bằng ID thực tế từ DB
@@ -88,7 +88,6 @@ async function createBookings() {
   });
 
   console.log(finalBookings);
-  // console.log("aa");
 
   const { error } = await supabase.from("bookings").insert(finalBookings);
   if (error) console.log(error.message);
@@ -97,20 +96,20 @@ async function createBookings() {
 function Uploader() {
   const [isLoading, setIsLoading] = useState(false);
 
-  // async function uploadAll() {
-  //   setIsLoading(true);
-  //   // Xóa dữ liệu cũ
-  //   await deleteBookings();
-  //   await deleteGuests();
-  //   await deleteRooms();
+  async function uploadAll() {
+    setIsLoading(true);
+    // Xóa dữ liệu cũ
+    await deleteBookings();
+    await deleteGuests();
+    await deleteRooms();
 
-  //   // Thêm dữ liệu test
-  //   await createGuests();
-  //   await createRooms();
-  //   await createBookings();
+    // Thêm dữ liệu test
+    await createGuests();
+    await createRooms();
+    await createBookings();
 
-  //   setIsLoading(false);
-  // }
+    setIsLoading(false);
+  }
 
   async function uploadBookings() {
     setIsLoading(true);

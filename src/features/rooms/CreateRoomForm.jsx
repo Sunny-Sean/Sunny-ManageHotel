@@ -116,7 +116,7 @@ function CreateRoomForm({ roomToUpdate = {}, onCloseModal }) {
           {...register("discount", {
             required: "This field is required",
             validate: (value) =>
-              value <= getValues().price ||
+              Number(value) <= Number(getValues().price) ||
               "Discount must less than price of the room",
           })}
         />
